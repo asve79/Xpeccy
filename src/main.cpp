@@ -56,6 +56,9 @@ int main(int ac,char** av) {
 
 	QApplication app(ac,av,true);
 
+    strncpy(conf.serialPort,"/dev/tnt0",255);
+    conf.rs232 = rs232_open("/dev/tnt0");
+
 	conf.running = 0;
 	conf.emu.pause = 0;
 	conf.emu.fast = 0;
@@ -164,6 +167,7 @@ int main(int ac,char** av) {
 	conf.running = 1;
 	ethread.start();
 	app.exec();
+    rs232_close(conf.rs232);
 	ethread.stop();
 	ethread.wait();
 	conf.running = 0;

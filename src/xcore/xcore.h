@@ -299,6 +299,9 @@ struct xConfig {
 		unsigned segment:1;
 		unsigned hideadr:1;
 	} dbg;
+
+    char serialPort[255];    //tty
+    int  rs232 = -1;         //desctiptor
 };
 
 extern xConfig conf;
