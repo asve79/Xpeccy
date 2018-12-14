@@ -13,7 +13,7 @@ xRs232* rs232Create();
 void rs232Destroy(xRs232*);
 
 struct termios rs232_savestdio();
-int  rs232_open(char *portname);
+int  rs232_open(char *portname, unsigned int speed);
 void rs232_close(int tty_fd);
 void rs232_rollback(struct termios* old_stdio);
 long rs232_write(int fd, unsigned char ch);

@@ -31,10 +31,36 @@ struct termios rs232_savestdio(){
     return old_stdio;
 }
 
-int rs232_open(char *portname){
+int rs232_open(char *portname, unsigned int speed){
     struct termios tio;
     struct termios stdio;
     int tty_fd;
+    speed_t cspeed;
+
+    if (speed > 7) speed=7;
+
+    switch (speed) {
+        case 0:
+            cspeed = B1200;
+        case 1:
+            cspeed = B2400;
+        case 2:
+            cspeed = B4800;
+        case 3:
+            cspeed = B9600;
+        case 4:
+            cspeed = B19200;
+        case 5:
+            cspeed = B38400;
+        case 6:
+            cspeed = B57600;
+        case 7:
+            cspeed = B115200;
+        default:
+            cspeed = B115200;
+    }
+
+    char *speeds[] = {"1200","2400","4800","9600","19200","38400","57600","115200"};
 
     unsigned char c='D';
 
@@ -58,14 +84,19 @@ int rs232_open(char *portname){
     tio.c_cc[VTIME]=5;
 
     tty_fd=open(portname, O_RDWR | O_NONBLOCK);
-    cfsetospeed(&tio,B115200);            // 115200 baud
-    cfsetispeed(&tio,B115200);            // 115200 baud
+    if (tty_fd != -1){
+        cfsetospeed(&tio,cspeed);            // cspeed baud
+        cfsetispeed(&tio,cspeed);            // cspeed baud
 
-    tcsetattr(tty_fd,TCSANOW,&tio);
+        tcsetattr(tty_fd,TCSANOW,&tio);
 
-    //int a = write(tty_fd,"i",1);
-    //printf("sended %d",a);
+        //int a = write(tty_fd,"i",1);
+        //printf("sended %d",a);
 
+        printf("Serial port %s opened on speed %s descriptor (%d)\n",portname,speeds[speed],tty_fd);
+    } else {
+        printf("Serial port '%s' is not open. Error %d\n",portname,errno);
+    }
     return tty_fd;
 }
 
@@ -76,8 +107,12 @@ void rs232_rollback(struct termios* old_stdio){
 }
 
 void rs232_close(int tty_fd){
-    printf("rs232. Close port (%d)\n",tty_fd);
-    close(tty_fd);
+    if (tty_fd >= 0){
+        printf("rs232. Close port (%d)\n",tty_fd);
+        close(tty_fd);
+    } else {
+        printf("rs232: notring to close.");
+    }
 }
 
 long rs232_write(int fd, unsigned char ch){

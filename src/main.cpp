@@ -56,8 +56,8 @@ int main(int ac,char** av) {
 
 	QApplication app(ac,av,true);
 
-    strncpy(conf.serialPort,"/dev/tnt0",255);
-    conf.rs232 = rs232_open("/dev/tnt0");
+//    strncpy(conf.serialPort,"/dev/tnt0",255);
+//    conf.rs232 = rs232_open("/dev/tnt0");
 
 	conf.running = 0;
 	conf.emu.pause = 0;
@@ -71,6 +71,10 @@ int main(int ac,char** av) {
 	QFontDatabase::addApplicationFont("://DejaVuSansMono.ttf");
 
 	loadConfig();
+    conf.rs232 = rs232_open(conf.serialPort,conf.serialSpeed);
+    for (uint i = 0; i < conf.prof.list.size(); i++) {
+        conf.prof.list[i]->zx->rs232->tty_fd = conf.rs232;
+    }
 
 	MainWin mwin;
 	xThread ethread;

@@ -32,6 +32,7 @@
 #define	SECT_LEDS	15
 #define	SECT_INPUT	16
 #define	SECT_SDC	17
+#define SECT_COMM   18
 
 std::map<std::string, int> shotFormat;
 xConfig conf;
@@ -198,6 +199,10 @@ void saveConfig() {
 	fprintf(cfile, "disk = %s\n", YESNO(conf.led.disk));
 	fprintf(cfile, "message = %s\n", YESNO(conf.led.message));
 
+    fprintf(cfile, "\n[COMMUNICATIONS]\n\n");
+    fprintf(cfile, "serialport = %s\n", conf.serialPort);
+    fprintf(cfile, "serialspeed = %d\n", conf.serialSpeed);
+
 	fclose(cfile);
 }
 
@@ -320,6 +325,7 @@ void loadConfig() {
 			if (pnam=="[TAPE]") section = SECT_TAPE;
 			if (pnam=="[LEDS]") section = SECT_LEDS;
 			if (pnam=="[INPUT]") section = SECT_INPUT;
+            if (pnam=="[COMMUNICATIONS]") section = SECT_COMM;
 		} else {
 			switch (section) {
 				case SECT_BOOKMARK:
@@ -476,7 +482,17 @@ void loadConfig() {
 					if (pnam=="disk") conf.led.disk = str2bool(pval) ? 1 : 0;
 					if (pnam=="message") conf.led.message = str2bool(pval) ? 1 : 0;
 					break;
-			}
+                case SECT_COMM:
+                    if (pnam=="serialport") {
+                        strcpy(conf.serialPort, pval.c_str());
+                        printf ("serialport=%s\n",conf.serialPort);
+                    }
+                    if (pnam=="serialspeed"){
+                        conf.serialSpeed = atoi(pval.c_str());
+                        printf("serialport speed = %d\n", conf.serialSpeed);
+                    }
+                    break;
+            }
 		}
 	}
 #if VID_DIRECT_DRAW

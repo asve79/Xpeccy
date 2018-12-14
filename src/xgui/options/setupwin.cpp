@@ -491,6 +491,9 @@ void SetupWin::start(xProfile* p) {
 // profiles
 	ui.defstart->setChecked(conf.defProfile);
 	buildproflist();
+//communications
+    ui.txtSerialPort->setText(trUtf8(conf.serialPort));
+    ui.cmdSerialSpeed->setCurrentIndex(conf.serialSpeed);
 
 	show();
 }
@@ -638,6 +641,16 @@ void SetupWin::apply() {
 	conf.led.message = ui.cbMessage->isChecked() ? 1 : 0;
 // profiles
 	conf.defProfile = ui.defstart->isChecked() ? 1 : 0;
+
+    memcpy( conf.serialPort, ui.txtSerialPort->text().toStdString().c_str() , (unsigned long)ui.txtSerialPort->text().size());
+    if (ui.cmdSerialSpeed->currentIndex() >= 0)
+        conf.serialSpeed = (uint)ui.cmdSerialSpeed->currentIndex();
+    rs232_close(conf.rs232); //close pert
+    conf.rs232 = rs232_open(conf.serialPort, conf.serialSpeed);
+    comp->rs232->tty_fd = conf.rs232;
+    for (uint i = 0; i < conf.prof.list.size(); i++) {      //Пройтись по профилям, обновить номер дескриптора открытого порта
+        conf.prof.list[i]->zx->rs232->tty_fd = conf.rs232;
+    }
 
 	saveConfig();
 	prfSave("");
