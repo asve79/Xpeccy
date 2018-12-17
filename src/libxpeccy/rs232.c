@@ -26,12 +26,15 @@ void rs232Destroy(xRs232* rs) {
 }
 
 struct termios rs232_savestdio(){
+#ifndef Q_OS_WIN
     struct termios old_stdio;
     tcgetattr(STDOUT_FILENO,&old_stdio);
     return old_stdio;
+#endif
 }
 
 int rs232_open(char *portname, unsigned int speed){
+#ifndef Q_OS_WIN
     struct termios tio;
     struct termios stdio;
     int tty_fd;
@@ -93,30 +96,46 @@ int rs232_open(char *portname, unsigned int speed){
         //int a = write(tty_fd,"i",1);
         //printf("sended %d",a);
 
-        printf("Serial port %s opened on speed %s descriptor (%d)\n",portname,speeds[speed],tty_fd);
+        printf("Serial port %s opened on speed %s\n",portname,speeds[speed]);
+#ifdef ISDEBUG
+        printf(" descriptor (%d)",tty_fd);
+#endif
+        printf("\n");
     } else {
         printf("Serial port '%s' is not open. Error %d\n",portname,errno);
     }
     return tty_fd;
+#endif
+#ifdef Q_OS_WIN
+    return -1;
+#endif
 }
 
 
 void rs232_rollback(struct termios* old_stdio){
+#ifndef Q_OS_WIN
     printf("rs232. repair configuration\n");
     tcsetattr(STDOUT_FILENO,TCSANOW, old_stdio);
+#endif
 }
 
 void rs232_close(int tty_fd){
+#ifndef Q_OS_WIN
     if (tty_fd >= 0){
-        printf("rs232. Close port (%d)\n",tty_fd);
+        printf("rs232. Close port");
+#ifdef ISDEBUG
+        printf(" descriptor (%d)",tty_fd);
+#endif
+        printf("\n");
         close(tty_fd);
     } else {
         printf("rs232: notring to close.");
     }
+#endif
 }
 
 long rs232_write(int fd, unsigned char ch){
-
+#ifndef Q_OS_WIN
     if (fd == -1){
         printf("no rs232 port assigned\n");
         return(-1);
@@ -129,19 +148,38 @@ long rs232_write(int fd, unsigned char ch){
 //    printf("\n  \\%02hhx send to descr %d, written %d bytes\n", ch, fd, bytes_written);
 
     if ((bytes_written == -1)||(errno != 0)){
-        printf("error no %d, descriptor %d\n",errno, fd);
+        printf("error no %d\n",errno);
+#ifdef ISDEBUG
+        printf(" descriptor (%d)",fd);
+#endif
+        printf("\n");
+
     }
     return bytes_written;
+#endif
+#ifdef Q_OS_WIN
+    return -1;
+#endif
 }
 
 int rs232_havein(int fd){
+#ifndef Q_OS_WIN
     int ret;
     unsigned char val;
     val=0;
     if (ioctl( fd, FIONREAD, &ret)< 0) {
-       perror("rs232_havein: ioctl error (%d)",fd);
+       perror("rs232_havein: ioctl error",fd);
+#ifdef ISDEBUG
+        printf(" descriptor (%d)",fd);
+#endif
+        printf("\n");
+
     }
     return ret;
+#endif
+#ifdef Q_OS_WIN
+   rerurn 0;
+#endif
 }
 
 unsigned char rs232_canwrite(int fd){

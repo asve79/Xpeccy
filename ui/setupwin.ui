@@ -2746,9 +2746,12 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_33">
          <item>
-          <widget class="QTabWidget" name="tabWidget">
+          <widget class="QTabWidget" name="tabXpeccySettings">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tab_5">
             <attribute name="icon">
@@ -2966,7 +2969,7 @@
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="tab_12">
+           <widget class="QWidget" name="tabCommunications">
             <attribute name="title">
              <string>Communication</string>
             </attribute>
@@ -3079,6 +3082,19 @@
              </property>
              <property name="wordWrap">
               <bool>true</bool>
+             </property>
+            </widget>
+            <widget class="QLabel" name="lblSorrySerial">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>90</y>
+               <width>481</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Sorry, not yet working on Windows OS</string>
              </property>
             </widget>
            </widget>

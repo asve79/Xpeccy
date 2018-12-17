@@ -494,7 +494,11 @@ void SetupWin::start(xProfile* p) {
 //communications
     ui.txtSerialPort->setText(trUtf8(conf.serialPort));
     ui.cmdSerialSpeed->setCurrentIndex(conf.serialSpeed);
-
+    ui.lblSorrySerial->setText("");
+#ifdef Q_OS_WIN
+    ui.tabCommunications->setEnabled(false);
+    ui.lblSorrySerial->setText("Sorry, not yet support on Windows OS");
+#endif
 	show();
 }
 
