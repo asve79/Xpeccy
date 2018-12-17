@@ -590,7 +590,9 @@ unsigned char tsInFBEF(Computer* comp, unsigned short port) {  //LCR port (line 
 
 void tsOutFBEF(Computer* comp, unsigned short port, unsigned char val) { //SET LCR port
     comp->tsconf.pfbef = val;
+#ifdef ISDEBUG
     printf("LCR set to 0x%02hhxh\n",val);
+#endif
 }
 
 unsigned char tsInFCEF(Computer* comp, unsigned short port) {  //MCR port (modem control)

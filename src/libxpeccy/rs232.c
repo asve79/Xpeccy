@@ -148,9 +148,9 @@ long rs232_write(int fd, unsigned char ch){
 //    printf("\n  \\%02hhx send to descr %d, written %d bytes\n", ch, fd, bytes_written);
 
     if ((bytes_written == -1)||(errno != 0)){
-        printf("error no %d\n",errno);
+        printf("rs232_write: error no %d\n",errno);
 #ifdef ISDEBUG
-        printf(" descriptor (%d)",fd);
+        printf(" descriptor (%d) code \\%02hhx",fd,ch);
 #endif
         printf("\n");
 
