@@ -1,3 +1,6 @@
+Это вераия xpeccy с поддержкой rs-232. Схема подключения по Кондратьеву.
+
+==
 How to compile
 - install cmake
 - open terminal emulator and make this:
@@ -12,5 +15,4 @@ And...
 Result should be './build/xpeccy' executable file
 
 By default there is only ZX Spectrum 48K romset w/o TRDOS.
-
-PS: DON'T try to build it under Windows. I'm serious.
+===
