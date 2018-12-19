@@ -28,6 +28,11 @@ bool addProfile(std::string nm, std::string fp) {
 	nprof->file = fp;
 	nprof->layName = std::string("default");
 	nprof->zx = compCreate();
+#ifdef ISDEBUG
+    printf("DBG: rs descriptor %d assigin to profile %s\n", conf.rs232, nm.data());
+#endif
+    nprof->zx->rs232->tty_fd = conf.rs232;
+
 	char fname[FILENAME_MAX];
 	strcpy(fname, conf.path.confDir);
 	strcat(fname, SLASH);

@@ -1263,6 +1263,7 @@ void MainWin::setProfile(std::string nm) {
 		}
 	}
 	comp = conf.prof.cur->zx;
+    comp->rs232->tty_fd = conf.rs232; //Назначить дескриптор открытого порта
 	emit s_keywin_upd(comp->keyb);
 	updateWindow();
 	if (comp->firstRun) {

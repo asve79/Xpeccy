@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>545</width>
-    <height>443</height>
+    <height>471</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -282,7 +282,7 @@
               <enum>Qt::DotLine</enum>
              </property>
              <attribute name="horizontalHeaderDefaultSectionSize">
-              <number>32</number>
+              <number>57</number>
              </attribute>
              <attribute name="horizontalHeaderMinimumSectionSize">
               <number>32</number>
@@ -294,7 +294,7 @@
               <bool>false</bool>
              </attribute>
              <attribute name="verticalHeaderDefaultSectionSize">
-              <number>17</number>
+              <number>21</number>
              </attribute>
              <attribute name="verticalHeaderMinimumSectionSize">
               <number>17</number>
@@ -1396,7 +1396,7 @@
                    <bool>false</bool>
                   </attribute>
                   <attribute name="verticalHeaderDefaultSectionSize">
-                   <number>17</number>
+                   <number>21</number>
                   </attribute>
                   <attribute name="verticalHeaderMinimumSectionSize">
                    <number>17</number>
@@ -1654,7 +1654,7 @@
                    <bool>false</bool>
                   </attribute>
                   <attribute name="verticalHeaderDefaultSectionSize">
-                   <number>17</number>
+                   <number>21</number>
                   </attribute>
                   <attribute name="verticalHeaderMinimumSectionSize">
                    <number>17</number>
@@ -2171,7 +2171,7 @@
                   <bool>false</bool>
                  </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
-                  <number>17</number>
+                  <number>21</number>
                  </attribute>
                  <attribute name="verticalHeaderMinimumSectionSize">
                   <number>17</number>
@@ -2746,7 +2746,10 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_33">
          <item>
-          <widget class="QTabWidget" name="tabWidget">
+          <widget class="QTabWidget" name="tabXpeccySettings">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -2809,7 +2812,7 @@
                      <bool>false</bool>
                     </attribute>
                     <attribute name="verticalHeaderDefaultSectionSize">
-                     <number>17</number>
+                     <number>21</number>
                     </attribute>
                     <column/>
                     <column/>
@@ -2966,6 +2969,135 @@
              </item>
             </layout>
            </widget>
+           <widget class="QWidget" name="tabCommunications">
+            <attribute name="title">
+             <string>Communication</string>
+            </attribute>
+            <widget class="QLabel" name="label_24">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>20</y>
+               <width>81</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Serial port</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_36">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>50</y>
+               <width>81</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Port Speed</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="txtSerialPort">
+             <property name="geometry">
+              <rect>
+               <x>100</x>
+               <y>20</y>
+               <width>191</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="maxLength">
+              <number>254</number>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="cmdSerialSpeed">
+             <property name="geometry">
+              <rect>
+               <x>100</x>
+               <y>50</y>
+               <width>141</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="currentIndex">
+              <number>7</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>1200</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>2400</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>4800</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>9600</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>19200</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>38400</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>57600</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>115200</string>
+              </property>
+             </item>
+            </widget>
+            <widget class="QLabel" name="label_40">
+             <property name="geometry">
+              <rect>
+               <x>340</x>
+               <y>20</y>
+               <width>151</width>
+               <height>41</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#cc0000;&quot;&gt;*&lt;/span&gt; Emulate Kondrat'ev scheme&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+            <widget class="QLabel" name="lblSorrySerial">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>90</y>
+               <width>481</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Sorry, not yet working on Windows OS</string>
+             </property>
+            </widget>
+           </widget>
            <widget class="QWidget" name="tab_11">
             <attribute name="icon">
              <iconset resource="../xpeccy.qrc">
@@ -3037,7 +3169,7 @@
                   <bool>false</bool>
                  </attribute>
                  <attribute name="verticalHeaderDefaultSectionSize">
-                  <number>17</number>
+                  <number>21</number>
                  </attribute>
                  <row/>
                  <column>

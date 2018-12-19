@@ -15,6 +15,7 @@ extern "C" {
 #include "hdd.h"
 #include "sdcard.h"
 #include "cartridge.h"
+#include "rs232.h"
 
 #include "sound/ayym.h"
 #include "sound/gs.h"
@@ -199,6 +200,16 @@ typedef struct {
 		unsigned char evo8F;
 		unsigned char blVer[16];	// bootloader info
 		unsigned char bcVer[16];	// baseconf info
+
+        unsigned char pf8ef;    //DLL delimiter reg (if LSR & 0x80==1)
+        unsigned char pf9ef;    //DLM delimiter reg (if LSR & 0x80==1)
+        unsigned char pfaef;    //FCR reg (FIFO CONTROL) / ISR(n/a)
+        unsigned char pfbef;    //LCR line control
+        unsigned char pfcef;    //MCR modem control register
+        unsigned char pfdef;    //LSR line status
+        unsigned char pfeef;    //MSR modem status
+        unsigned char pffef;    //SPR user register; must be restet when machine is powerdown or hard reset
+
 	} evo;
 	struct {
 		DMAaddr src;
@@ -220,6 +231,15 @@ typedef struct {
 		unsigned char p21af;
 		unsigned char pwr_up;		// 1 on 1st run, 0 after reading 00AF
 		unsigned char vdos;
+
+        unsigned char pf8ef;    //DLL delimiter reg (if LSR & 0x80==1)
+        unsigned char pf9ef;    //DLM delimiter reg (if LSR & 0x80==1)
+        unsigned char pfaef;    //FCR reg (FIFO CONTROL) / ISR(n/a)
+        unsigned char pfbef;    //LCR line control
+        unsigned char pfcef;    //MCR modem control register
+        unsigned char pfdef;    //LSR line status
+        unsigned char pfeef;    //MSR modem status
+        unsigned char pffef;    //SPR user register; must be restet when machine is powerdown or hard reset
 	} tsconf;
 	struct {
 		unsigned char p7E;		// color num (if trig7E=0)
@@ -286,6 +306,7 @@ typedef struct {
 	CMOS cmos;
 	int resbank;			// rompart active after reset
 	int tapCount;
+    xRs232* rs232;          // rs232
 } Computer;
 
 #include "hardware.h"

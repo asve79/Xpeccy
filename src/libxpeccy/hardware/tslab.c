@@ -451,6 +451,205 @@ void tsOut45AF(Computer* comp, unsigned short port, unsigned char val) {comp->vi
 void tsOut46AF(Computer* comp, unsigned short port, unsigned char val) {comp->vid->tsconf.t1yl = val;}
 void tsOut47AF(Computer* comp, unsigned short port, unsigned char val) {comp->vid->tsconf.t1yh = val & 1;}
 
+
+unsigned char tsInDBG(Computer* comp, unsigned short port) {
+#ifdef ISDEBUG
+    printf("WARNING UNKNOWN IN request. port %d (%#08x) vol 0xFFh\n", port, port);
+#endif
+    return 255;
+}
+
+void tsOutDBG(Computer* comp, unsigned short port, unsigned char val) {
+#ifdef ISDEBUG
+    printf("WARNING UNKNOWN OUT request. port %d (%#08x) vol 0x%02hhxh\n", port, port, val);
+#endif
+}
+
+unsigned char tsInc2EF(Computer* comp, unsigned short port) { // ERS_SR port
+    unsigned char val=0;
+    int ret = rs232_havein(comp->rs232->tty_fd);
+    if (ret > 0 ) val = 1;
+#ifdef ISDEBUG
+    printf("ERS_SR IN request. descriptor %d. port %d [%#08x] vol 0x%02hhxh ioctl returns %d\n", comp->rs232->tty_fd, port, port, val,ret);
+#endif
+    return val;
+}
+
+unsigned char  tsInc3EF(Computer* comp, unsigned short port) { // ERS_ST port
+    unsigned char val = rs232_canwrite(comp->rs232->tty_fd);
+#ifdef ISDEBUG
+    printf("ERS_ST IN request. port %d [%#08x] vol 0x%02hhxh\n", port, port, val);
+#endif
+    return val;
+}
+
+unsigned char tsIn00EF(Computer* comp, unsigned short port) {  //ERS_RD port
+    unsigned char val;
+    int readed=read(comp->rs232->tty_fd,&val,1);
+#ifdef ISDEBUG
+    printf("ERS_RD IN request. port %d [%#08x] vol 0x%02hhxh readed %d\n", port, port, val, readed);
+#endif
+    return val;
+}
+
+void tsOut00EF(Computer* comp, unsigned short port, unsigned char val) { //ERS_RD port
+    //printf("DBG: descriptor %d\n",comp->rs232);
+#ifdef ISDEBUG
+    printf("ERS_RD OUT request. port %d [%#08x] vol 0x%02hhxh\n", port, port, val);
+#endif
+    rs232_write(comp->rs232->tty_fd, val);
+}
+
+unsigned char tsInF8EF(Computer* comp, unsigned short port) {  //DLL or DAT port
+    unsigned char val;
+    if (comp->tsconf.pfbef & 0x80){ // if LCR & 0x80 == 1, then return DLL status
+#ifdef ISDEBUG
+        printf("DLL IN request (ECR & x80==1). port %d [%#08x] vol 0x%02hhxh readed %d\n", port, port, comp->tsconf.pf8ef, 1);
+#endif
+        return comp->tsconf.pf8ef;
+    } else {
+        long readed=read(comp->rs232->tty_fd,&val,1);
+#ifdef ISDEBUG
+        printf("DAT IN request. port %d [%#08x] vol 0x%02hhxh readed %lu\n", port, port, val, readed);
+#endif
+        return val;
+    }
+}
+
+void tsOutF8EF(Computer* comp, unsigned short port, unsigned char val) { //DLL or DAT port
+    //printf("DBG: descriptor %d\n",comp->rs232);
+    if (comp->tsconf.pfbef & 0x80){ // if LCR & 0x80 == 1, then return DLL status
+        comp->tsconf.pf8ef = val;
+#ifdef ISDEBUG
+        printf("DLL set to 0x%02hhxh\n",val);
+#endif
+    } else {
+#ifdef ISDEBUG
+        printf("DAT OUT request. port %d [%#08x] vol 0x%02hhxh\n", port, port, val);
+#endif
+        rs232_write(comp->rs232->tty_fd, val);
+    }
+}
+
+unsigned char tsInF9EF(Computer* comp, unsigned short port) {  //DLM or IER port
+    unsigned char val;
+    if (comp->tsconf.pfbef & 0x80){ // if LCR & 0x80 == 1, then return DLL status
+#ifdef ISDEBUG
+        printf("DLM IN request (ECR & x80==1). port %d [%#08x] vol 0x%02hhxh readed %d\n", port, port, comp->tsconf.pf8ef, 1);
+#endif
+        return comp->tsconf.pf9ef;
+    } else {
+#ifdef ISDEBUG
+        printf("IER IN request. port %d [%#08x] vol 0x%02hhxh notthing to do\n", port, port);
+#endif
+        return 0;
+    }
+}
+
+void tsOutF9EF(Computer* comp, unsigned short port, unsigned char val) { //DLM or DAT port
+    //printf("DBG: descriptor %d\n",comp->rs232);
+    if (comp->tsconf.pfbef & 0x80){ // if LCR & 0x80 == 1, then return DLM status
+        comp->tsconf.pf9ef = val;
+#ifdef ISDEBUG
+        printf("DLM set to 0x%02hhxh\n",val);
+    } else {
+        printf("IER OUT request. port %d [%#08x] notrhing to do\n", port, port);
+#endif
+    }
+}
+
+unsigned char tsInFAEF(Computer* comp, unsigned short port) {  //ISR port (not used)
+#ifdef ISDEBUG
+    printf("ISR IN request. port %d [%#08x]. not used. return 0\n", port, port);
+#endif
+    return 0;
+}
+
+void tsOutFAEF(Computer* comp, unsigned short port, unsigned char val) { //FCR port fifo control
+#ifdef ISDEBUG
+    if (val & 0x01){
+        if (val & 0x02){
+            printf("FIFO clear rcv bufer. dummy\n");
+        }
+        if (val & 0x04){
+            printf("FIFO clear send bufer. dummy\n");
+        }
+    } else {
+        printf("FIFO control diabled (send vol 0x%02hhxh)\n",val);
+    }
+#endif
+}
+
+unsigned char tsInFBEF(Computer* comp, unsigned short port) {  //LCR port (line control)
+    unsigned char val=comp->tsconf.pfbef;
+#ifdef ISDEBUG
+    printf("LCR IN request. port %d [%#08x] vol 0x%02hhxh\n", port, port, val);
+#endif
+    return val;
+}
+
+void tsOutFBEF(Computer* comp, unsigned short port, unsigned char val) { //SET LCR port
+    comp->tsconf.pfbef = val;
+#ifdef ISDEBUG
+    printf("LCR set to 0x%02hhxh\n",val);
+#endif
+}
+
+unsigned char tsInFCEF(Computer* comp, unsigned short port) {  //MCR port (modem control)
+    /* dummy. temporaty nothing to to with serial port */
+    unsigned char val=comp->tsconf.pfcef;
+#ifdef ISDEBUG
+    printf("MCR IN request. port %d [%#08x] vol 0x%02hhxh\n", port, port, val);
+#endif
+    return val;
+}
+
+void tsOutFCEF(Computer* comp, unsigned short port, unsigned char val) { //MCR port (modem control)
+    /* dummy. temporaty nothing to to with serial port */
+    comp->tsconf.pfcef = val;
+#ifdef ISDEBUG
+    printf("MCR set to 0x%02hhxh\n",val);
+#endif
+}
+
+/* in progress */
+unsigned char tsInFDEF(Computer* comp, unsigned short port) {  //LSR port (line status)
+    unsigned char val=0;
+    if (rs232_havein(comp->rs232->tty_fd) > 0) val = val | 1;
+
+    val = val | 0x60; //emulate transmit empty, THR empty
+    return val;
+}
+
+
+unsigned char tsInFEEF(Computer* comp, unsigned short port) {  //MSR port (modem status)
+    unsigned char val=comp->tsconf.pfeef;
+    comp->tsconf.pfeef = comp->tsconf.pfeef & 0xfe; //reset CTS status after read state
+#ifdef ISDEBUG
+    /* todo: check modem status if needed */
+    printf("MSR IN request. port %d [%#08x] vol 0x%02hhxh\n", port, port, val);
+    if (comp->tsconf.pfeef != val){
+        printf("MSR: CTS was reset!\n");
+    }
+#endif
+    return val;
+}
+
+unsigned char tsInFFEF(Computer* comp, unsigned short port) {  //SPR port
+    unsigned char val=comp->tsconf.pffef;
+#ifdef ISDEBUG
+    printf("SPR IN request. port %d [%#08x] vol 0x%02hhxh\n", port, port, val);
+#endif
+    return val;
+}
+
+void tsOutFFEF(Computer* comp, unsigned short port, unsigned char val) { //SPR port
+    comp->tsconf.pffef = val;
+#ifdef ISDEBUG
+    printf("SPR set to 0x%02hhxh",val);
+#endif
+}
+
 // catch
 
 static xPort tsPortMap[] = {
@@ -523,6 +722,25 @@ static xPort tsPortMap[] = {
 	// dos
 	{0x009f,0x001f,1,2,2,tsInBDI,	tsOutBDI},	// 1f,3f,5f,7f
 	{0x00ff,0x00ff,1,2,2,tsInFF,	tsOutFF},	// ff
+
+    {0xffff,0x00ef,2,2,2,tsIn00EF,	tsOut00EF}, //ERS_DS (ts)
+    {0xffff,0xc0ef,2,2,2,tsInDBG,	tsOutDBG},
+    {0xffff,0xc1ef,2,2,2,tsInDBG,	tsOutDBG},
+    {0xffff,0xc2ef,2,2,2,tsInc2EF,	tsOutDBG},  //ERS_SR (ts)
+    {0xffff,0xc3ef,2,2,2,tsInc3EF,	tsOutDBG},  //ERS_ST (ts)
+    {0xffff,0xc4ef,2,2,2,tsInDBG,	tsOutDBG},
+    {0xffff,0xc5ef,2,2,2,tsInDBG,	tsOutDBG},
+    {0xffff,0xc6ef,2,2,2,tsInDBG,	tsOutDBG},
+    {0xffff,0xc7ef,2,2,2,tsInDBG,	tsOutDBG},
+    {0xffff,0xf8ef,2,2,2,tsInF8EF,	tsOutF8EF}, // DAT/DLL register
+    {0xffff,0xf9ef,2,2,2,tsInF9EF,	tsOutF9EF}, // IER/DML register
+    {0xffff,0xfaef,2,2,2,tsInFAEF,	tsOutFAEF}, // ISR/FCR register
+    {0xffff,0xfbef,2,2,2,tsInFBEF,	tsOutFBEF}, // LCR register
+    {0xffff,0xfcef,2,2,2,tsInFCEF,	tsOutFCEF}, // MCR register         w/ dummy
+    {0xffff,0xfdef,2,2,2,tsInFDEF,	tsOutDBG},  // LSR register         w/ dummy
+    {0xffff,0xfeef,2,2,2,tsInFEEF,	tsOutDBG},  // MSR status register  w/ dummy
+    {0xffff,0xffef,2,2,2,tsInFFEF,	tsOutFAEF}, // SPR register
+
 	{0x0000,0x0000,2,2,2,NULL,	NULL},
 };
 

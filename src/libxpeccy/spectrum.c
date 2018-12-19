@@ -210,14 +210,33 @@ Computer* compCreate() {
 	char bcnm[] = {'x','E','v','o',' ','0','.','5','2',000,000,000,0x89,0x99,0x00,0x00};
 	memcpy(comp->evo.blVer,blnm,16);
 	memcpy(comp->evo.bcVer,bcnm,16);
+
+    comp->evo.pf8ef=0x00; //DLL (when LCR & 0x80 == 1)
+    comp->evo.pf9ef=0x00; //DLM (when LCR & 0x80 == 1)
+    comp->evo.pfaef=0x01; //FCR (fifo enabled)
+    comp->evo.pfbef=0x03; //LCR (8 bits lenth, 1 stop bits, no parity)
+    comp->evo.pfcef=0x00; //MCR (rts=0)
+    comp->evo.pfdef=0x60; //LSR (all fifo rcv/res empty)
+    comp->evo.pfeef=0xa0; //MSR (cts=0)
+    comp->evo.pffef=0x00; //SPR (default user vol)
 //tsconf
-	comp->tsconf.pwr_up = 1;
+    comp->tsconf.pf8ef=0x00; //DLL (when LCR & 0x80 == 1)
+    comp->tsconf.pf9ef=0x00; //DLM (when LCR & 0x80 == 1)
+    comp->tsconf.pfaef=0x01; //FCR (fifo enabled)
+    comp->tsconf.pfbef=0x03; //LCR (8 bits lenth, 1 stop bits, no parity)
+    comp->tsconf.pfcef=0x02; //MCR (rts=1)
+    comp->tsconf.pfdef=0x60; //LSR (all fifo rcv/res empty)
+    comp->tsconf.pfeef=0xb0; //MSR (cts=1)
+    comp->tsconf.pffef=0x00; //SPR (default user vol)
+
+    comp->tsconf.pwr_up = 1;
 // rzx
 #ifdef HAVEZLIB
 	comp->rzx.file = NULL;
 #endif
+    comp->rs232 = rs232Create();
 	gsReset(comp->gs);
-	comp->cmos.data[17] = 0xaa;
+    comp->cmos.data[17] = 0xaa;
 	return comp;
 }
 

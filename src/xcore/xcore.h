@@ -299,6 +299,10 @@ struct xConfig {
 		unsigned segment:1;
 		unsigned hideadr:1;
 	} dbg;
+
+    char serialPort[255];    //tty
+    unsigned int  serialSpeed;        //скорость 0=1200, 2400, 4800, 9600, 19200, 38400, 57600 and 7=115200
+    int  rs232 = -1;         //desctiptor
 };
 
 extern xConfig conf;
